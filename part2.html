@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIS Channel Drills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Layout: one graph-paper column, sections of numbered problems, solutions folded */
+:root{
+  --paper:#f8faf6; --grid:#dfe7ef; --ink:#1d2b4f; --pencil:#5b6573; --pen:#2447a8; --check:#2e7d5b; --card:#ffffff; --line:#c9d3de; --note:#f3f6fb;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --font-hand:"Caveat","Comic Sans MS",cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#10172a; --grid:#1b2540; --ink:#e4e9f5; --pencil:#9aa6bc; --pen:#8fb0ff; --check:#6fcf9f; --card:#161f36; --line:#2a3656; --note:#1a2440; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --paper:#10172a; --grid:#1b2540; --ink:#e4e9f5; --pencil:#9aa6bc; --pen:#8fb0ff; --check:#6fcf9f; --card:#161f36; --line:#2a3656; --note:#1a2440; color-scheme:dark; }
+body{
+  color:var(--ink); font-family:var(--font-body); font-size:17px; line-height:1.55;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+main{max-width:720px; margin:0 auto; padding:28px 18px 60px}
+h1{font-size:1.9rem; line-height:1.15; margin:.2em 0 .3em; text-wrap:balance}
+.hand{font-family:var(--font-hand); color:var(--pen); font-size:1.5rem; margin:0}
+.intro{color:var(--pencil); max-width:62ch}
+.given{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--pen); padding:12px 16px; margin:18px 0 8px; overflow-x:auto}
+.given p{margin:.35em 0}
+.given .lbl{font-weight:600}
+h2{font-size:1.15rem; margin:38px 0 4px; color:var(--pen); text-wrap:balance}
+.sec-note{margin:0 0 4px; color:var(--pencil); max-width:62ch}
+.say{background:var(--note); border:1px dashed var(--line); padding:10px 14px; margin:14px 0 0; font-size:.95rem}
+.say b{color:var(--pen)}
+ol{list-style:none; padding:0; margin:0; counter-reset:q var(--start,0)}
+li{counter-increment:q; background:var(--card); border:1px solid var(--line); margin:12px 0; padding:14px 16px 12px 52px; position:relative}
+li::before{content:counter(q); position:absolute; left:14px; top:10px; font-family:var(--font-hand); font-size:1.7rem; color:var(--pen); line-height:1}
+.q{margin:0 0 8px; overflow-x:auto}
+details{border-top:1px dashed var(--line); padding-top:8px}
+details + details{margin-top:6px}
+summary{cursor:pointer; color:var(--pen); font-weight:600; font-size:.95rem; list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ "} details[open] summary::before{content:"− "}
+summary:focus-visible{outline:2px solid var(--pen); outline-offset:3px}
+details.hint summary{color:var(--pencil)}
+.sol{padding:6px 0 2px; overflow-x:auto}
+.sol p{margin:.4em 0}
+.ans{color:var(--check); font-weight:700}
+.why{color:var(--pencil); font-style:italic}
+footer{color:var(--pencil); font-size:.9rem; margin-top:40px}
+mjx-container{max-width:100%}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<main>
+<p class="hand">part 2: the RIS itself</p>
+<h1>RIS channel drills: 24 problems</h1>
+<p class="intro">These follow the Wireless Pi RIS tutorial step by step: a channel as a sum of paths, one path through one RIS element, picking the best phase, then your real board. Work each one on paper first. All numbers use 5.5 GHz and λ ≈ 5.45 cm.</p>
+
+<div class="given">
+<p class="lbl">New formulas (from the tutorial)</p>
+<p>Channel from many paths: \(\;h = \displaystyle\sum_i \eta_i\, e^{-j2\pi f_c \tau_i}\)</p>
+<p>Through RIS element \(n\): \(\;h_{A,n}\cdot e^{j\theta_n}\cdot h_{B,n}\)</p>
+<p>Received: \(\;r = (\Lambda + h_d)\,s, \quad \Lambda = \displaystyle\sum_n h_{A,n}\, e^{j\theta_n}\, h_{B,n}\)</p>
+<p>Best phase: \(\;\theta_n = \angle h_d - \angle h_{A,n} - \angle h_{B,n}\)</p>
+<p>Adding two arrows: \(\;|a+b|^2 = |a|^2 + |b|^2 + 2|a||b|\cos\psi\)</p>
+<p class="lbl" style="margin-top:.8em">One rule that does most of the work</p>
+<p>\(\big(A e^{j\alpha}\big)\big(B e^{j\beta}\big) = AB\, e^{j(\alpha+\beta)}\): multiply the lengths, add the angles.</p>
+</div>
+
+<h2>A. A channel is a sum of paths</h2>
+<p class="sec-note">Each path is one arrow: its length is how strong the path is, its angle comes from its delay. Tutorial equations 1 to 3.</p>
+<ol style="--start:0">
+<li><p class="q">One path with strength \(\eta = 0.5\) and delay \(\tau = 45.45\) ps. Find \(h\) in polar form and in \(a + jb\) form.</p>
+<details class="hint"><summary>Hint</summary><div class="sol"><p>Fraction of a cycle is \(F\tau\). The minus sign in \(e^{-j\ldots}\) means the arrow turns clockwise.</p></div></details>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(F\tau = (5.5\times10^9)(45.45\times10^{-12}) = 0.25\) cycle \(= 90°\)</p>
+<p>\(h = 0.5\,e^{-j90°} = 0.5(\cos(-90°) + j\sin(-90°))\)</p>
+<p class="ans">h = 0.5e^{−j90°} = −0.5j</p></div></details></li>
+
+<li><p class="q">Two paths reach the receiver. Line of sight: \(\eta_0 = 1\), no delay. A wall bounce: \(\eta_1 = 0.6\), arriving 90.9 ps later. Find \(h\), then the power compared to line of sight alone, in dB.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>90.9 ps is half a cycle, so the wall arrow is at −180°: \(0.6e^{-j180°} = -0.6\)</p>
+<p>\(h = 1 + (-0.6) = 0.4\). Power ratio \(= 0.4^2/1^2 = 0.16\), and \(10\log_{10}0.16\)</p>
+<p class="ans">h = 0.4, about −8 dB</p>
+<p class="why">An extra path made the signal weaker. That's a fade, and it's the problem an RIS is built to fix.</p></div></details></li>
+
+<li><p class="q">Same wall, but now it arrives 181.8 ps late. Find \(h\) and the power in dB versus line of sight alone.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>181.8 ps is one full cycle, so the arrow is back at 0°: \(h = 1 + 0.6 = 1.6\)</p>
+<p>\(1.6^2 = 2.56\), \(10\log_{10}2.56\)</p>
+<p class="ans">h = 1.6, about +4.1 dB</p>
+<p class="why">Same two paths, opposite outcome. Only the phase changed.</p></div></details></li>
+
+<li><p class="q">The wall path is 1.00 m longer than line of sight. What angle does it add? Then: by how much would that extra length need to change to flip it by 180°?</p>
+<details class="hint"><summary>Hint</summary><div class="sol"><p>Count wavelengths: extra length ÷ λ. Throw away the whole cycles.</p></div></details>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(1.00 / 0.05454 = 18.33\) wavelengths. Keep 0.33, so \(0.33 \times 360° = 120°\), and the term is \(e^{-j120°}\).</p>
+<p>A 180° flip needs half a wavelength of change: \(\lambda/2\)</p>
+<p class="ans">−120°; a change of about 2.7 cm flips it</p>
+<p class="why">Moving your phone a couple of centimeters can turn a good spot into a fade. That's why the RIS phases have to be set for where the receiver actually is.</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> why can the same two paths give 0.4 in one spot and 1.6 a few centimeters away?</div>
+
+<h2>B. The complex detour: adding two arrows</h2>
+<p class="sec-note">The tutorial's \(|a+b|^2\) formula. \(\psi\) is the angle between the two arrows.</p>
+<ol style="--start:4">
+<li><p class="q">\(|a| = 3\) and \(|b| = 4\). Find \(|a+b|\) when \(\psi = 0°\), \(90°\), and \(180°\).</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(\psi = 0°\): \(9 + 16 + 24(1) = 49\)</p>
+<p>\(\psi = 90°\): \(9 + 16 + 24(0) = 25\)</p>
+<p>\(\psi = 180°\): \(9 + 16 + 24(-1) = 1\)</p>
+<p class="ans">7, 5, 1</p>
+<p class="why">The 90° case is your old \(3 + 4j\): two arrows at right angles. Aligned gives the most, opposite gives the least.</p></div></details></li>
+
+<li><p class="q">\(a = 2e^{j30°}\), \(b = 1e^{j150°}\). Find \(|a+b|\) with the formula, then check it by adding real and imaginary parts.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(\psi = 150° - 30° = 120°\), \(\cos120° = -0.5\)</p>
+<p>\(|a+b|^2 = 4 + 1 + 2(2)(1)(-0.5) = 3\)</p>
+<p>Check: \(a = 1.732 + 1j\), \(b = -0.866 + 0.5j\), sum \(= 0.866 + 1.5j\), and \(\sqrt{0.75 + 2.25} = \sqrt3\)</p>
+<p class="ans">|a + b| = √3 ≈ 1.73</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> which term in the formula is the only one the RIS can change, and what value does the RIS want it to have?</div>
+
+<h2>C. One path through one RIS element</h2>
+<p class="sec-note">Three rotations in a row: transmitter to element, the element's own phase, element to receiver. Tutorial equation 5.</p>
+<ol style="--start:6">
+<li><p class="q">Element has \(h_A = 0.5e^{j40°}\), \(h_B = 0.4e^{-j70°}\), and \(\theta = 0°\). Find \(h_A e^{j\theta} h_B\) in polar and \(a + jb\) form.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Lengths multiply: \(0.5 \times 1 \times 0.4 = 0.2\). Angles add: \(40° + 0° - 70° = -30°\)</p>
+<p>\(0.2(\cos30° - j\sin30°)\)</p>
+<p class="ans">0.2e^{−j30°} ≈ 0.173 − 0.1j</p></div></details></li>
+
+<li><p class="q">Same element, now set to \(\theta = 120°\). What's the new length and angle?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Length: still \(0.5 \times 1 \times 0.4 = 0.2\). Angle: \(40 + 120 - 70 = 90°\)</p>
+<p class="ans">0.2e^{j90°} = 0.2j (same length, new direction)</p>
+<p class="why">\(|e^{j\theta}| = 1\), so the element can only turn the arrow. It can never make it longer. That's what "passive" means.</p></div></details></li>
+
+<li><p class="q">The direct path is \(h_d = 0.1e^{j60°}\). What \(\theta\) makes this element's arrow point the same way as \(h_d\)? Check your answer.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(\theta = \angle h_d - \angle h_A - \angle h_B = 60° - 40° - (-70°)\)</p>
+<p>Check: \(40° + 90° - 70° = 60°\) ✓</p>
+<p class="ans">θ = 90°</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> why does the best-phase formula subtract both \(\angle h_A\) and \(\angle h_B\)?</div>
+
+<h2>D. Two elements plus the direct path</h2>
+<p class="sec-note">A tiny RIS you can do by hand. Use these numbers for all four problems.</p>
+<div class="given">
+<p>\(h_d = 0.3e^{j0°}\)</p>
+<p>Element 1: \(h_{A,1} = 0.5e^{j20°}\), \(h_{B,1} = 0.4e^{j50°}\)</p>
+<p>Element 2: \(h_{A,2} = 0.5e^{-j120°}\), \(h_{B,2} = 0.4e^{j10°}\)</p>
+</div>
+<ol style="--start:9">
+<li><p class="q">Both elements set to \(\theta = 0°\). Find each element's arrow, \(\Lambda\), and \(|\Lambda + h_d|\).</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Element 1: \(0.2e^{j(20+50)°} = 0.2e^{j70°}\)</p>
+<p>Element 2: \(0.2e^{j(-120+10)°} = 0.2e^{-j110°}\)</p>
+<p>70° and −110° are exactly opposite, so they cancel: \(\Lambda = 0\)</p>
+<p class="ans">Λ = 0, |Λ + h_d| = 0.3</p>
+<p class="why">An unconfigured RIS can do nothing at all, or even hurt. The board only helps once you set the phases.</p></div></details></li>
+
+<li><p class="q">Find the best \(\theta_1\) and \(\theta_2\).</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(\theta_1 = 0° - 20° - 50° = -70°\) (same as 290°)</p>
+<p>\(\theta_2 = 0° - (-120°) - 10° = 110°\)</p>
+<p class="ans">θ₁ = 290°, θ₂ = 110°</p></div></details></li>
+
+<li><p class="q">With those phases, find \(|\Lambda + h_d|\) and the power gain over the unconfigured board, in dB.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Every arrow now points at 0°, so lengths just add: \(0.3 + 0.2 + 0.2 = 0.7\)</p>
+<p>\((0.7/0.3)^2 = 5.44\), \(10\log_{10}5.44\)</p>
+<p class="ans">0.7, about +7.4 dB</p></div></details></li>
+
+<li><p class="q">Now make it 1-bit: round each \(\theta\) to 0° or 180°. Find \(|\Lambda + h_d|\) and the loss compared to problem 12.</p>
+<details class="hint"><summary>Hint</summary><div class="sol"><p>After rounding, find each element's new arrow angle. They may line up with each other but not with \(h_d\). Then use the formula from section B.</p></div></details>
+<details><summary>Show solution</summary><div class="sol">
+<p>290° is closer to 360° (0°), so \(\theta_1 \to 0°\). 110° is closer to 180°, so \(\theta_2 \to 180°\).</p>
+<p>Element 1: \(70° + 0° = 70°\). Element 2: \(-110° + 180° = 70°\). Both at 70°, so \(\Lambda = 0.4e^{j70°}\)</p>
+<p>\(|\Lambda + h_d|^2 = 0.16 + 0.09 + 2(0.4)(0.3)\cos70° = 0.25 + 0.082 = 0.332\)</p>
+<p>\(\sqrt{0.332} = 0.576\), and \(10\log_{10}(0.332/0.49)\)</p>
+<p class="ans">≈ 0.58, about −1.7 dB versus ideal</p>
+<p class="why">Bonus with 2-bit: 290° → 270° and 110° → 90°, both arrows at 50°. \(|\cdot|^2 = 0.25 + 0.24\cos50° = 0.404\), only −0.8 dB. Same pattern as part 1.</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> in problem 13 the two elements still agreed with each other. So what exactly did 1-bit cost you?</div>
+
+<h2>E. A reflector has two angles</h2>
+<p class="sec-note">With \(d = \lambda/2\), the phase step between neighbors is \(180°\,(\sin\theta_{out} - \sin\theta_{in})\). Angles are measured from the board's normal, and \(\theta_{out} = \theta_{in}\) is the plain mirror direction.</p>
+<ol style="--start:13">
+<li><p class="q">The wave hits head-on (\(\theta_{in} = 0°\)) and you want it to leave at \(\theta_{out} = 30°\). Find the step and the phases of the first four elements.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(180°(0.5 - 0) = 90°\)</p>
+<p class="ans">step 90°: 0°, 90°, 180°, 270°</p>
+<p class="why">Same as your steering weights from part 1, because a head-on wave adds no phase of its own.</p></div></details></li>
+
+<li><p class="q">\(\theta_{in} = 25°\), \(\theta_{out} = 25°\). What's the step, and what is the board doing?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(180°(\sin25° - \sin25°) = 0°\)</p>
+<p class="ans">0°: every element the same, so it acts as a plain mirror</p></div></details></li>
+
+<li><p class="q">\(\theta_{in} = 30°\), \(\theta_{out} = 0°\). Find the step and the first four phases.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(180°(0 - 0.5) = -90°\)</p>
+<p>0°, −90°, −180°, −270° → wrap to 0°–360°</p>
+<p class="ans">step −90°: 0°, 270°, 180°, 90°</p></div></details></li>
+
+<li><p class="q">The board is set for problem 14 (step 90°). The transmitter moves, so the wave now arrives from \(\theta_{in} = 10°\). Where does the beam go?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>The step is fixed, so \(90° = 180°(\sin\theta_{out} - \sin10°)\)</p>
+<p>\(\sin\theta_{out} = 0.5 + 0.174 = 0.674\)</p>
+<p class="ans">θ_out ≈ 42.4°</p>
+<p class="why">The beam doesn't vanish. It shifts, like a tilted mirror when the flashlight moves. That's why the controller has to know where the transmitter is.</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> why does a flat board with every element at the same phase behave like a mirror?</div>
+
+<h2>F. Your 8×8 board</h2>
+<p class="sec-note">Element \((m, n)\) sits in column \(m\) and row \(n\). Its phase is \(m\cdot\Delta_x + n\cdot\Delta_y\): one step for each direction.</p>
+<ol style="--start:17">
+<li><p class="q">Head-on wave. Steer to 30° along \(x\) and to 14.5° along \(y\) (\(\sin = 0.25\)). Find \(\Delta_x\), \(\Delta_y\), and the phase of elements (3, 5) and (7, 7).</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(\Delta_x = 180°(0.5) = 90°\), \(\Delta_y = 180°(0.25) = 45°\)</p>
+<p>(3, 5): \(270° + 225° = 495° \to 135°\)</p>
+<p>(7, 7): \(630° + 315° = 945° \to 225°\)</p>
+<p class="ans">Δx = 90°, Δy = 45°; 135° and 225°</p></div></details></li>
+
+<li><p class="q">Same board, 1-bit. What do those two elements get set to, and how many on/off control bits does the whole board need? What about 2-bit?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>135° is 45° from 180° and 135° from 0°, so → 180°. 225° → 180° too.</p>
+<p>One bit per element: 64. Two bits per element: 128.</p>
+<p class="ans">both 180°; 64 bits for 1-bit, 128 for 2-bit</p>
+<p class="why">That bit count is what your microcontroller and shift registers have to drive.</p></div></details></li>
+</ol>
+
+<h2>G. Why it takes many elements</h2>
+<ol style="--start:19">
+<li><p class="q">Each RIS hop is weak: \(|h_{A,n}| = |h_{B,n}| = 0.01\). The direct path is \(|h_d| = 0.01\). How many perfectly aligned elements does it take to match the direct path? With your 64 elements, what's the power gain over direct alone?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>One element: \(0.01 \times 0.01 = 0.0001\). To reach 0.01: \(N = 100\)</p>
+<p>64 elements: \(\Lambda = 0.0064\), total \(0.0164\). \((0.0164/0.01)^2 = 2.69\), \(10\log_{10}2.69\)</p>
+<p class="ans">100 elements; about +4.3 dB with 64</p>
+<p class="why">Each element pays the loss twice (in and out), so one element barely counts. The RIS only matters with many elements, and it matters most when the direct path is blocked.</p></div></details></li>
+
+<li><p class="q">Same setup, but a person blocks the direct path completely (\(h_d = 0\)). Compare the 64-element RIS power to the original unblocked direct path, in dB. Then do it for 16×16.</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>8×8: \((0.0064/0.01)^2 = 0.41\), \(10\log_{10}0.41\)</p>
+<p>16×16: \(\Lambda = 256 \times 0.0001 = 0.0256\), \((2.56)^2 = 6.55\), \(10\log_{10}6.55\)</p>
+<p class="ans">8×8: about −3.9 dB; 16×16: about +8.2 dB</p>
+<p class="why">Power grows with \(N^2\): 4× the elements gives 16× the power, +12 dB. That's the trade-off behind 8×8 versus 16×16.</p></div></details></li>
+</ol>
+
+<h2>H. Where h_A and h_B come from</h2>
+<p class="sec-note">In a simulation you calculate each channel from distance. Free space, nothing in the way: \(\;h = \dfrac{\lambda}{4\pi d}\,e^{-j2\pi d/\lambda}\). The first part sets the length (how weak), the second sets the angle. \(d\) is in meters.</p>
+<ol style="--start:20">
+<li><p class="q">The transmitter is 2 m from an RIS element. Find \(|h_A|\) and its angle.</p>
+<details class="hint"><summary>Hint</summary><div class="sol"><p>Length: plug into \(\lambda/(4\pi d)\). Angle: count wavelengths in 2 m, keep the leftover, and remember the minus sign.</p></div></details>
+<details><summary>Show solution</summary><div class="sol">
+<p>Length: \(0.0545 / (4\pi \cdot 2) = 0.0545/25.13 \approx 0.00217\)</p>
+<p>Angle: \(2 / 0.0545 = 36.67\) λ. Keep 0.67, so \(0.67 \times 360° = 240°\)</p>
+<p class="ans">h_A ≈ 0.00217 e^{−j240°}</p></div></details></li>
+
+<li><p class="q">Move the transmitter to 4 m. What happens to the length, the power in dB, and the angle?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Length: double the distance, half the length: \(0.00108\). Power: \(10\log_{10}(0.5^2) = -6\) dB</p>
+<p>Angle: \(4/0.0545 = 73.33\) λ, keep 0.33, so 120°</p>
+<p class="ans">≈ 0.00108 e^{−j120°}, −6 dB</p>
+<p class="why">Every doubling of distance costs 6 dB. Small moves barely change the length but can swing the angle all the way around.</p></div></details></li>
+
+<li><p class="q">The transmitter is far away at 30°, about 2 m from element 0. Element 1 is \(\lambda/2\) over, so its path is \(d\sin30° = 1.36\) cm longer. How much do the two elements differ in length and in angle?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>Length: \(2/2.0136\), under a 1% difference, so basically the same</p>
+<p>Angle: \(1.36 / 5.45 = 0.25\) λ, so 90°</p>
+<p class="ans">same length, 90° apart</p>
+<p class="why">Far away, only the angle changes between neighbors, by exactly the step from part 1. That's why the old \(a_n = e^{-j2\pi\frac{d}{\lambda}n\sin\theta}\) works: it's this formula when the transmitter is far.</p></div></details></li>
+
+<li><p class="q">One element sees the transmitter at \(d_A = 2\) m and the receiver at \(d_B = 3\) m. The direct path is 4 m. How long is the element's arrow \(|h_A h_B|\), and how many perfectly aligned elements would it take to match the direct path?</p>
+<details><summary>Show solution</summary><div class="sol">
+<p>\(|h_A| = 0.00217\), \(|h_B| = 0.0545/(4\pi\cdot3) = 0.00145\), product \(\approx 3.14\times10^{-6}\)</p>
+<p>Direct: \(0.0545/(4\pi\cdot4) = 0.00108\)</p>
+<p>\(0.00108 / 3.14\times10^{-6} \approx 345\)</p>
+<p class="ans">≈ 3.1 × 10⁻⁶; about 345 elements</p>
+<p class="why">This is the simplest model, and it's pessimistic. Real elements have area and antenna gain, which the ETSI model in the MathWorks example includes. But it shows why the RIS shines most when the direct path is blocked.</p></div></details></li>
+</ol>
+<div class="say"><b>Say it out loud:</b> in your MATLAB sim, what two positions do you need to compute \(h_{A,n}\) for every element?</div>
+
+<footer>Stuck? Go back one problem, or back to part 1. Every problem here is the same arrow-adding with one more rotation stacked on.</footer>
+</main>
+</body>
+</html>
